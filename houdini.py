@@ -1,39 +1,40 @@
-import ctypes.util
+import cffi
 
 
-libpath = ctypes.util.find_library('houdini')
-if not libpath:
-    raise ImportError("Couldn't find libhoudini with ctypes.util.find_library")
-_libhoudini = ctypes.CDLL(libpath)
+_houdini_cdef = '''
+typedef struct {
+    char *ptr;
+    size_t asize, size;
+} gh_buf;
+void gh_buf_init(gh_buf *buf, size_t initial_size);
+int houdini_escape_html(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_escape_html0(gh_buf *ob, const uint8_t *src, size_t size, int secure);
+int houdini_unescape_html(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_escape_xml(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_escape_uri(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_escape_url(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_escape_href(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_unescape_uri(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_unescape_url(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_escape_js(gh_buf *ob, const uint8_t *src, size_t size);
+int houdini_unescape_js(gh_buf *ob, const uint8_t *src, size_t size);
+'''
 
-
-class _GHBuffer(ctypes.Structure):
-    _fields_ = [
-        ('ptr', ctypes.c_char_p),
-        ('asize', ctypes.c_size_t),
-        ('size', ctypes.c_size_t),
-    ]
-
-    def __init__(self, initial_size=0):
-        _libhoudini.gh_buf_init(ctypes.byref(self), ctypes.c_size_t(initial_size))
-
-    def __str__(self):
-        return self.ptr[:self.size]
+_houdini_ffi = cffi.FFI()
+_houdini_ffi.cdef(_houdini_cdef)
+_libhoudini = _houdini_ffi.dlopen('houdini')
 
 
 def escaper(etype):
-    gh_pointer = ctypes.POINTER(_GHBuffer)
     escaper_func = getattr(_libhoudini, 'houdini_' + etype)
-    escaper_func.argtypes = [gh_pointer, ctypes.c_char_p, ctypes.c_size_t]
     def escape(string):
         encoded = string.encode('utf-8')
-        src = ctypes.c_char_p(encoded)
-        size = ctypes.c_size_t(len(encoded))
-        output_buffer = _GHBuffer()
-        res = escaper_func(ctypes.byref(output_buffer), src, size)
+        output = _houdini_ffi.new('gh_buf *')
+        _libhoudini.gh_buf_init(output, 0)
+        res = escaper_func(output, encoded, len(encoded))
         if not res:
             return string
-        return str(output_buffer).decode('utf-8')
+        return _houdini_ffi.string(output.ptr, output.size).decode('utf-8')
     escape.__name__ = etype
     return escape
 

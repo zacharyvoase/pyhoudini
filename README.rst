@@ -24,8 +24,16 @@ usage
     >>> print(houdini.escape_html("3 < 5"))
     3 &gt; 5
 
-The API is as described on the `library’s
-README <https://github.com/vmg/houdini>`__.
+The API is as described in the `library’s
+README <https://github.com/vmg/houdini>`__, except all these functions
+accept a unicode string and return a unicode string. If no escaping is
+done, the return value will be the original string:
+
+.. code:: pycon
+
+    >>> string = "hello"
+    >>> houdini.escape_html(string) is string
+    True
 
 getting that shared library
 ---------------------------
@@ -42,15 +50,15 @@ libraries. It should be simple:
     cd houdini
     make
 
-Then, for Linux:
+Then, for **Linux**:
 
 .. code:: bash
 
     sudo cp libhoudini.so /usr/local/lib
     sudo ldconfig  # Refresh the dynamic linker cache.
 
-and on OS X (you may not want to use ``sudo`` here, ``/usr/local/`` is
-normally user-writable):
+and on **OS X** (you may not want to use ``sudo`` here, ``/usr/local/``
+is normally user-writable):
 
 .. code:: bash
 

@@ -24,17 +24,26 @@ usage
 3 &gt; 5
 ```
 
-The API is as described on the [library’s README][vmg/houdini].
+The API is as described in the [library’s README][vmg/houdini], except all
+these functions accept a unicode string and return a unicode string. If no
+escaping is done, the return value will be the original string:
 
   [vmg/houdini]: https://github.com/vmg/houdini
+
+```pycon
+>>> string = "hello"
+>>> houdini.escape_html(string) is string
+True
+```
 
 getting that shared library
 ---------------------------
 
 I submitted [a pull request](https://github.com/vmg/houdini/pull/7) adding the
 capability to produce shared libraries to Houdini’s Makefile. Until/unless
-that’s merged, you’ll need to use [my fork](https://github.com/zacharyvoase/houdini)
-to build those libraries. It should be simple:
+that’s merged, you’ll need to use [my
+fork](https://github.com/zacharyvoase/houdini) to build those libraries. It
+should be simple:
 
 ```bash
 git clone 'https://github.com/zacharyvoase/houdini.git'
@@ -42,14 +51,14 @@ cd houdini
 make
 ```
 
-Then, for Linux:
+Then, for **Linux**:
 
 ```bash
 sudo cp libhoudini.so /usr/local/lib
 sudo ldconfig  # Refresh the dynamic linker cache.
 ```
 
-and on OS X (you may not want to use `sudo` here, `/usr/local/` is normally
+and on **OS X** (you may not want to use `sudo` here, `/usr/local/` is normally
 user-writable):
 
 ```bash

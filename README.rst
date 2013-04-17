@@ -67,7 +67,7 @@ is normally user-writable):
 unlicense
 ---------
 
-Obviously this doesn't apply to Houdini itself, but all the code written
+**N.B.**: this doesn't apply to Houdini itself, but all the code written
 by me is released as follows:
 
 This is free and unencumbered software released into the public domain.

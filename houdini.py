@@ -52,13 +52,13 @@ def escaper(etype):
     return escape
 
 
-escape_html = staticmethod(escaper('escape_html'))
-unescape_html = staticmethod(escaper('unescape_html'))
-escape_xml = staticmethod(escaper('escape_xml'))
-escape_uri = staticmethod(escaper('escape_uri'))
-escape_url = staticmethod(escaper('escape_url'))
-escape_href = staticmethod(escaper('escape_href'))
-unescape_uri = staticmethod(escaper('unescape_uri'))
-unescape_url = staticmethod(escaper('unescape_url'))
-escape_js = staticmethod(escaper('escape_js'))
-unescape_js = staticmethod(escaper('unescape_js'))
+escape_html = escaper('escape_html')
+unescape_html = escaper('unescape_html')
+escape_xml = escaper('escape_xml')
+escape_uri = escaper('escape_uri')
+escape_url = escaper('escape_url')
+escape_href = escaper('escape_href')
+unescape_uri = escaper('unescape_uri')
+unescape_url = escaper('unescape_url')
+escape_js = escaper('escape_js')
+unescape_js = escaper('unescape_js')

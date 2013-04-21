@@ -3,5 +3,6 @@ README.rst: README.md
 
 test:
 	nosetests -v
+	pep8 houdini.py test_houdini.py
 
 .PHONY: test

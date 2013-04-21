@@ -1,21 +1,66 @@
 # -*- coding: utf-8 -*-
 
+from unittest import TestCase
 from nose.tools import assert_equals
-
 import houdini
+import sys
+
+import sys
+if sys.version_info[0] < 3:
+    import codecs
+    u = lambda x: codecs.unicode_escape_decode(x)[0]
+else:
+    u = lambda x: x
 
 
-def test_escapes_stuff_if_necessary():
-    string = u"<>&;\""
-    escaped = houdini.escape_html(string)
-    assert_equals(escaped, u'&lt;&gt;&amp;;&quot;')
+class BaseTestCase(TestCase):
+    """Base test case.
+    """
 
-def test_doesnt_escape_stuff_if_it_doesnt_need_to():
-    string = u'hello'
-    escaped = houdini.escape_html(string)
-    assert string is escaped
+    escaper = None
+    simple_tests = []
 
-def test_output_preserves_unicodeness():
-    string = u'héllo < hëllo'
-    escaped = houdini.escape_html(string)
-    assert_equals(escaped, u'héllo &lt; hëllo')
+    def test_escapes(self):
+        """Escaping returns expected value
+        """
+
+        for value, expected in self.simple_tests:
+            actual = self.escaper(value)
+            self.assertEqual(actual, expected)
+            self.assertEqual(type(actual), type(expected))
+
+
+class UnescaperTestCaseMixin(object):
+    """Test case mixin for testing methods with an unescaper.
+    """
+
+    unescaper = None
+
+    def test_unescapes(self):
+        """Unescaping returns expected value
+        """
+
+        for expected, value in self.simple_tests:
+            actual = self.unescaper(value)
+            self.assertEqual(actual, expected)
+            self.assertEqual(type(actual), type(expected))
+
+
+class HtmlTestCase(UnescaperTestCaseMixin, BaseTestCase):
+    """Test case for :func:`escape_html` and :func:`unescape_html`.
+    """
+
+    escaper = houdini.escape_html
+    unescaper = houdini.unescape_html
+    simple_tests = [
+        ('hello', 'hello'),
+        (u('hello'), u('hello')),
+        (u('héllo < hëllo'), u('héllo &lt; hëllo')),
+        ('<>&;"', '&lt;&gt;&amp;;&quot;'),
+        (u('<>&;"'), u('&lt;&gt;&amp;;&quot;')),
+    ]
+
+
+__all__ = (
+    'HtmlTestCase',
+)

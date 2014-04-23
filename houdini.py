@@ -11,7 +11,6 @@ else:
 
 
 libpath = ctypes.util.find_library('houdini')
-libpath = '/code/houdini/libhoudini.so'
 if not libpath:
     raise ImportError("Couldn't find libhoudini with ctypes.util.find_library")
 _libhoudini = ctypes.CDLL(libpath)

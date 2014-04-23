@@ -151,6 +151,32 @@ class UrlTestCase(UnescaperTestCaseMixin, EscaperTestCaseMixin, TestCase):
     ]
 
 
+class UrlSafeTableTestCase(TestCase):
+    """Test case for :func:`url_safe_table`.
+    """
+
+    def test_escape(self):
+        """Escaping with custom safe table returns expected value
+        """
+
+        for safe, cases in [
+                ('', [
+                    ('http://example.com/url?param=value',
+                     'http%3A%2F%2Fexample.com%2Furl%3Fparam%3Dvalue'),
+                ]),
+                ('/', [
+                    ('http://example.com/url?param=value',
+                     'http%3A//example.com/url%3Fparam%3Dvalue'),
+                ]),
+        ]:
+            safe_table = houdini.url_safe_table(safe)
+
+            for string, expected in cases:
+                self.assertEqual(houdini.escape_url_safe_table(string,
+                                                               safe_table),
+                                 expected)
+
+
 __all__ = (
     'HtmlTestCase',
     'XmlTestCase',

@@ -16,6 +16,9 @@ if not libpath:
 _libhoudini = ctypes.CDLL(libpath)
 
 
+table_ptr = ctypes.POINTER(ctypes.c_char)
+
+
 class _GHBuffer(ctypes.Structure):
     _fields_ = [
         ('ptr', ctypes.c_char_p),
@@ -76,7 +79,7 @@ def table_escaper(etype):
 def table_builder(etype):
     builder_func = getattr(_libhoudini, 'houdini_' + etype)
     builder_func.argtypes = [ctypes.c_char_p, ctypes.c_size_t]
-    table_ptr = ctypes.POINTER(ctypes.c_char)
+    builder_func.restype = table_ptr
 
     def build_table(safe):
         is_string = isinstance(safe, string_type)
@@ -86,7 +89,7 @@ def table_builder(etype):
         res = builder_func(src, size)
         if not res:
             raise RuntimeError('failed to create safe character table')
-        return ctypes.cast(res, table_ptr)
+        return res
 
     build_table.__name__ = etype
     return build_table
